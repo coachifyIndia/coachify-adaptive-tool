@@ -1,0 +1,191 @@
+# Question Generation Prompt for Module 17: Simple Equations
+
+## Module Overview
+- **Module ID:** 17
+- **Module Name:** Simple Equations
+- **Total Questions Needed:** 114
+- **Micro-Skills:** 3
+
+## Micro-Skills Breakdown
+
+1. **Micro-Skill 52: Equation Formation from Word Problems**
+   - Questions needed: 38
+   - Difficulty range: 5-9
+   - Average time: 130 seconds
+   - Distribution: 8 easy, 23 medium, 8 hard
+
+2. **Micro-Skill 53: Equation Solving Techniques**
+   - Questions needed: 38
+   - Difficulty range: 4-8
+   - Average time: 100 seconds
+   - Distribution: 8 easy, 23 medium, 8 hard
+
+3. **Micro-Skill 54: System of Solutions and Plotting the Graph**
+   - Questions needed: 38
+   - Difficulty range: 6-10
+   - Average time: 150 seconds
+   - Distribution: 8 easy, 23 medium, 8 hard
+
+## Instructions for AI
+
+You are tasked with generating **114 high-quality math practice questions** for the "Simple Equations" module. These questions will be used in an adaptive learning platform for competitive exam preparation.
+
+### Requirements
+
+1. **Question Format**
+   - Each question must be a JSON object
+   - Follow the exact schema provided below
+   - Generate realistic, exam-like scenarios
+   - Use proper mathematical notation
+
+2. **Difficulty Distribution**
+   - **Easy (20%):** Straightforward calculations, basic concepts
+   - **Medium (60%):** Multi-step problems, moderate complexity
+   - **Hard (20%):** Complex scenarios, time pressure, advanced techniques
+
+3. **Quality Standards**
+   - Real-world applications and practical scenarios
+   - Progressive difficulty within each micro-skill
+   - Clear, unambiguous problem statements
+   - Accurate solution steps and hints
+   - Common errors based on typical student mistakes
+
+### JSON Schema
+
+```json
+{
+  "question_code": "M17_MS{micro_skill_id}_Q{001-999}",
+  "module_id": 17,
+  "micro_skill_id": {micro_skill_id},
+  "question_data": {
+    "text": "Clear, concise question statement",
+    "type": "numerical_input",
+    "correct_answer": 42,
+    "solution_steps": [
+      {
+        "step": 1,
+        "action": "What to do",
+        "calculation": "Math expression",
+        "result": "Result"
+      }
+    ],
+    "hints": [
+      {
+        "level": 1,
+        "text": "Gentle nudge in right direction"
+      },
+      {
+        "level": 2,
+        "text": "More specific guidance"
+      },
+      {
+        "level": 3,
+        "text": "Almost complete solution path"
+      }
+    ]
+  },
+  "metadata": {
+    "difficulty_level": 1-10,
+    "expected_time_seconds": 30-180,
+    "points": 10,
+    "tags": ["tag1", "tag2"],
+    "prerequisites": [],
+    "common_errors": [
+      {
+        "type": "calculation_error",
+        "frequency": 0.3,
+        "description": "Description of common mistake"
+      }
+    ]
+  }
+}
+```
+
+### Example Question
+
+```json
+{
+  "question_code": "M17_MS52_Q001",
+  "module_id": 17,
+  "micro_skill_id": 52,
+  "question_data": {
+    "text": "Calculate: 47 + 38",
+    "type": "numerical_input",
+    "correct_answer": 85,
+    "solution_steps": [
+      {
+        "step": 1,
+        "action": "Add the ones place",
+        "calculation": "7 + 8 = 15",
+        "result": "15 (carry 1)"
+      },
+      {
+        "step": 2,
+        "action": "Add the tens place with carry",
+        "calculation": "4 + 3 + 1 = 8",
+        "result": "8"
+      },
+      {
+        "step": 3,
+        "action": "Combine results",
+        "calculation": "80 + 5",
+        "result": "85"
+      }
+    ],
+    "hints": [
+      {
+        "level": 1,
+        "text": "Start by adding the ones place digits"
+      },
+      {
+        "level": 2,
+        "text": "Remember to carry when the sum is greater than 9"
+      },
+      {
+        "level": 3,
+        "text": "7 + 8 = 15, carry the 1, then 4 + 3 + 1 = 8"
+      }
+    ]
+  },
+  "metadata": {
+    "difficulty_level": 2,
+    "expected_time_seconds": 45,
+    "points": 10,
+    "tags": ["addition", "two_digit", "carry"],
+    "prerequisites": [],
+    "common_errors": [
+      {
+        "type": "carry_error",
+        "frequency": 0.4,
+        "description": "Forgetting to carry the 1"
+      }
+    ]
+  }
+}
+```
+
+### Output Format
+
+Please output a JSON array containing all 114 questions:
+
+```json
+[
+  { /* question 1 */ },
+  { /* question 2 */ },
+  ...
+  { /* question 114 */ }
+]
+```
+
+### Important Notes
+
+1. Ensure question_code is unique for each question
+2. Use sequential numbering: Q001, Q002, Q003, etc.
+3. Distribute questions evenly across micro-skills
+4. Vary the scenarios and numbers used
+5. Make questions progressively harder within each difficulty level
+6. Include diverse problem types and contexts
+
+---
+
+**Start generating questions now. Output only the JSON array.**

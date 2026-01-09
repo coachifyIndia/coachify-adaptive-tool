@@ -1,0 +1,69 @@
+[
+  {
+    "question_code": "M2_MS4_Q051",
+    "module_id": 2,
+    "micro_skill_id": 4,
+    "question_data": {
+      "text": "Calculate: 85 - 35",
+      "type": "numerical_input",
+      "correct_answer": 50,
+      "solution_steps": [
+        {
+          "step": 1,
+          "action": "Subtract the ones place digits",
+          "calculation": "5 - 5",
+          "result": "Ones calculated"
+        },
+        {
+          "step": 2,
+          "action": "Subtract the tens place digits with borrow if needed",
+          "calculation": "8 - 3",
+          "result": "Tens calculated"
+        },
+        {
+          "step": 3,
+          "action": "Combine the results",
+          "calculation": "85 - 35",
+          "result": "50"
+        }
+      ],
+      "hints": [
+        {
+          "level": 1,
+          "text": "Start by subtracting the ones place digits"
+        },
+        {
+          "level": 2,
+          "text": "Remember to borrow from the tens place if needed"
+        },
+        {
+          "level": 3,
+          "text": "If 5 < 5, borrow 10 from the tens place"
+        }
+      ]
+    },
+    "metadata": {
+      "difficulty_level": 5,
+      "expected_time_seconds": 55,
+      "points": 10,
+      "tags": [
+        "subtraction",
+        "2_digit",
+        "mental_math"
+      ],
+      "prerequisites": [],
+      "common_errors": [
+        {
+          "type": "borrow_error",
+          "frequency": 0.4,
+          "description": "Forgetting to borrow when needed"
+        },
+        {
+          "type": "sign_error",
+          "frequency": 0.25,
+          "description": "Getting negative results"
+        }
+      ]
+    }
+  }
+]
