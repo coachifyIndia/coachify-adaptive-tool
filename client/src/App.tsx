@@ -4,8 +4,10 @@ import Navbar from './components/layout/Navbar';
 import LoginPage from './pages/auth/LoginPage';
 import RegisterPage from './pages/auth/RegisterPage';
 import DashboardPage from './pages/dashboard/DashboardPage';
+import AnalyticsTestingPage from './pages/dashboard/AnalyticsTestingPage';
 import SessionPage from './pages/practice/SessionPage';
 import PracticeModulesPage from './pages/practice/PracticeModulesPage';
+import AdaptiveDrillPage from './pages/practice/AdaptiveDrillPage';
 import AdaptiveDrillSummaryPage from './pages/practice/AdaptiveDrillSummaryPage';
 import QuestionExplorerPage from './pages/practice/QuestionExplorerPage';
 
@@ -43,10 +45,19 @@ function AppContent() {
           />
           
           <Route 
-            path="/practice" 
+            path="/practice-questions" 
             element={
               <ProtectedRoute>
                 <PracticeModulesPage />
+              </ProtectedRoute>
+            } 
+          />
+          
+          <Route 
+            path="/practice" 
+            element={
+              <ProtectedRoute>
+                <AdaptiveDrillPage />
               </ProtectedRoute>
             } 
           />
@@ -74,6 +85,15 @@ function AppContent() {
             element={
               <ProtectedRoute>
                 <QuestionExplorerPage />
+              </ProtectedRoute>
+            } 
+          />
+
+          <Route 
+            path="/analytics-testing" 
+            element={
+              <ProtectedRoute>
+                <AnalyticsTestingPage />
               </ProtectedRoute>
             } 
           />

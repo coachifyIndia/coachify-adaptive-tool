@@ -75,6 +75,12 @@ export default function DashboardPage() {
                     <Calendar size={16} />
                     <span>Day {data.performance.consistency.currentStreak} Streak</span>
                  </div>
+                 <button
+                   onClick={() => navigate('/analytics-testing')}
+                   className="bg-purple-50 text-purple-700 px-3 py-1.5 rounded-full text-sm font-medium border border-purple-200 hover:bg-purple-100 transition-colors"
+                 >
+                   🧪 API Testing
+                 </button>
               </div>
            </div>
         </div>
