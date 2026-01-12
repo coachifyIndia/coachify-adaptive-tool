@@ -60,6 +60,12 @@ export interface EndSessionResponse {
       accuracy: number;
       points_earned: number;
       duration_minutes: number;
+      confidence_metrics?: {
+        avg_confidence: number; // 0-100%
+        high_confidence_count: number; // >80%
+        medium_confidence_count: number; // 50-80%
+        low_confidence_count: number; // <50%
+      };
     };
   };
 }
