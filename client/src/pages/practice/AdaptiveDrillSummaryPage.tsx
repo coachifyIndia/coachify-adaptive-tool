@@ -32,6 +32,7 @@ interface DrillSummary {
     expected_time_seconds: number;
     user_answer: any;
     question_text: string;
+    confidence_score?: number; // 0-1 scale
   }>;
   duration_seconds: number;
 }
@@ -219,6 +220,137 @@ export default function AdaptiveDrillSummaryPage() {
                </table>
              </div>
         </div>
+
+        {/* Confidence Insights Section */}
+        {(() => {
+          // Calculate confidence metrics from questions
+          const confidenceScores = summary.questions
+            .filter(q => q.confidence_score !== undefined)
+            .map(q => (q.confidence_score || 0) * 100); // Convert to percentage
+
+          if (confidenceScores.length === 0) return null;
+
+          const avgConfidence = confidenceScores.reduce((sum, score) => sum + score, 0) / confidenceScores.length;
+          const highConfidenceCount = confidenceScores.filter(score => score > 80).length;
+          const mediumConfidenceCount = confidenceScores.filter(score => score >= 50 && score <= 80).length;
+          const lowConfidenceCount = confidenceScores.filter(score => score < 50).length;
+
+          return (
+            <div className="bg-white rounded-2xl shadow-[0_2px_10px_-3px_rgba(6,81,237,0.1)] border border-indigo-50 overflow-hidden">
+              <div className="px-6 py-4 border-b border-gray-100 bg-gradient-to-r from-purple-50 to-indigo-50">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
+                    <svg className="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                    </svg>
+                  </div>
+                  <div>
+                    <h2 className="text-xl font-bold text-gray-900">Confidence Insights</h2>
+                    <p className="text-sm text-gray-600">How confident were you in your answers?</p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="p-6 space-y-6">
+                {/* Average Confidence */}
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm font-semibold text-gray-700">Average Confidence</span>
+                    <span className={`text-2xl font-bold ${
+                      avgConfidence >= 80 ? 'text-green-600' : 
+                      avgConfidence >= 50 ? 'text-orange-500' : 
+                      'text-red-500'
+                    }`}>
+                      {Math.round(avgConfidence)}%
+                    </span>
+                  </div>
+                  <div className="w-full bg-gray-100 rounded-full h-3 overflow-hidden">
+                    <div 
+                      className={`h-3 rounded-full transition-all duration-500 ${
+                        avgConfidence >= 80 ? 'bg-gradient-to-r from-green-400 to-green-600' : 
+                        avgConfidence >= 50 ? 'bg-gradient-to-r from-orange-400 to-orange-600' : 
+                        'bg-gradient-to-r from-red-400 to-red-600'
+                      }`}
+                      style={{ width: `${avgConfidence}%` }}
+                    ></div>
+                  </div>
+                </div>
+
+                {/* Confidence Breakdown */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-4">
+                  {/* High Confidence */}
+                  <div className="bg-green-50 border border-green-100 rounded-xl p-4 hover:shadow-md transition-shadow">
+                    <div className="flex items-center gap-3 mb-3">
+                      <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
+                        <CheckCircle2 className="w-5 h-5 text-green-600" />
+                      </div>
+                      <div className="flex-1">
+                        <p className="text-xs font-semibold text-green-700 uppercase tracking-wider">High</p>
+                        <p className="text-xs text-green-600">&gt;80% confident</p>
+                      </div>
+                    </div>
+                    <div className="flex items-baseline gap-2">
+                      <span className="text-3xl font-bold text-green-700">{highConfidenceCount}</span>
+                      <span className="text-sm text-green-600">questions</span>
+                    </div>
+                  </div>
+
+                  {/* Medium Confidence */}
+                  <div className="bg-orange-50 border border-orange-100 rounded-xl p-4 hover:shadow-md transition-shadow">
+                    <div className="flex items-center gap-3 mb-3">
+                      <div className="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center">
+                        <svg className="w-5 h-5 text-orange-600" fill="currentColor" viewBox="0 0 20 20">
+                          <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM7 9a1 1 0 000 2h6a1 1 0 100-2H7z" clipRule="evenodd" />
+                        </svg>
+                      </div>
+                      <div className="flex-1">
+                        <p className="text-xs font-semibold text-orange-700 uppercase tracking-wider">Medium</p>
+                        <p className="text-xs text-orange-600">50-80% confident</p>
+                      </div>
+                    </div>
+                    <div className="flex items-baseline gap-2">
+                      <span className="text-3xl font-bold text-orange-700">{mediumConfidenceCount}</span>
+                      <span className="text-sm text-orange-600">questions</span>
+                    </div>
+                  </div>
+
+                  {/* Low Confidence */}
+                  <div className="bg-red-50 border border-red-100 rounded-xl p-4 hover:shadow-md transition-shadow">
+                    <div className="flex items-center gap-3 mb-3">
+                      <div className="w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center">
+                        <XCircle className="w-5 h-5 text-red-600" />
+                      </div>
+                      <div className="flex-1">
+                        <p className="text-xs font-semibold text-red-700 uppercase tracking-wider">Low</p>
+                        <p className="text-xs text-red-600">&lt;50% confident</p>
+                      </div>
+                    </div>
+                    <div className="flex items-baseline gap-2">
+                      <span className="text-3xl font-bold text-red-700">{lowConfidenceCount}</span>
+                      <span className="text-sm text-red-600">questions</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Insight Message */}
+                {lowConfidenceCount > 0 && (
+                  <div className="bg-blue-50 border border-blue-100 rounded-lg p-4 flex gap-3">
+                    <svg className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+                    </svg>
+                    <div className="flex-1">
+                      <p className="text-sm font-semibold text-blue-900">Practice Tip</p>
+                      <p className="text-sm text-blue-700 mt-1">
+                        You had {lowConfidenceCount} question(s) with low confidence. 
+                        Consider reviewing these topics to strengthen your understanding.
+                      </p>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          );
+        })()}
 
         {/* Detailed Breakdown */}
         <div className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
