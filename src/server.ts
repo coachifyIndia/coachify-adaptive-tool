@@ -40,6 +40,7 @@ import logger from './utils/logger.util';
 // Import routes
 import authRoutes from './routes/auth.routes';
 import practiceRoutes from './routes/practice.routes';
+import analyticsRoutes from './routes/analytics.routes';
 
 /**
  * CREATE EXPRESS APPLICATION
@@ -281,6 +282,7 @@ app.get('/', (_req: Request, res: Response) => {
 
 app.use('/api/v1/auth', authRoutes);
 app.use('/api/v1/practice', practiceRoutes);
+app.use('/api/v1/analytics', analyticsRoutes);
 
 // TODO: Add more routes as you build them
 // app.use('/api/v1/questions', questionRoutes);
