@@ -33,6 +33,7 @@ import { selectQuestionsForSession, selectAdaptiveDrillQuestions } from '../serv
 import { getModuleName, getModuleDescription } from '../constants/modules.constant';
 import { getMicroSkillName } from '../constants/microskills.constant';
 import logger from '../utils/logger.util';
+import { updateUserTimeAnalytics, detectFatigue } from '../services/timeAnalytics.service';
 
 /**
  * START NEW PRACTICE SESSION
@@ -637,6 +638,15 @@ export async function endPracticeSession(req: Request, res: Response): Promise<v
     await session.save();
 
     // ========================================================================
+    // UPDATE TIME ANALYTICS (ASYNC - NON-BLOCKING)
+    // ========================================================================
+    // Run in background - don't wait for completion
+    updateUserTimeAnalytics(user_id, session_id).catch((error) => {
+      logger.error('Failed to update time analytics (non-critical):', error);
+      // Don't throw - this is a background process
+    });
+
+    // ========================================================================
     // CALCULATE CONFIDENCE METRICS
     // ========================================================================
     const confidenceScores = session.questions
@@ -657,6 +667,20 @@ export async function endPracticeSession(req: Request, res: Response): Promise<v
       mediumConfidenceCount,
       lowConfidenceCount,
     });
+
+    // ========================================================================
+    // DETECT FATIGUE
+    // ========================================================================
+    let fatigueAnalysis = null;
+    try {
+      if (session.questions.length >= 6) {
+        fatigueAnalysis = await detectFatigue(session_id);
+        logger.debug('Fatigue analysis completed', { fatigueAnalysis });
+      }
+    } catch (error) {
+      logger.error('Failed to detect fatigue (non-critical):', error);
+      // Continue without fatigue data
+    }
 
     // Prepare response
     const durationMinutes = Math.round(
@@ -683,6 +707,12 @@ export async function endPracticeSession(req: Request, res: Response): Promise<v
             high_confidence_count: highConfidenceCount,
             medium_confidence_count: mediumConfidenceCount,
             low_confidence_count: lowConfidenceCount,
+          },
+          time_insights: {
+            fatigue_detected: fatigueAnalysis?.fatigue_detected || false,
+            fatigue_recommendation: fatigueAnalysis?.fatigue_detected
+              ? fatigueAnalysis.recommendation
+              : null,
           },
         },
         performance_analysis: {
