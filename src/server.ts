@@ -72,8 +72,12 @@ const app: Express = express();
  */
 app.use(
   cors({
-    origin: config.node.env === 'production' ? config.cors.origin : ['http://localhost:5173', 'http://localhost:5174', 'http://localhost:3000'],
-    // In development: Allow localhost:5173 & 5174 (Vite) and localhost:3000
+    origin: config.node.env === 'production'
+      ? config.cors.origin
+      : (_origin, callback) => {
+          // In development: Allow all origins (including Playwright tests)
+          callback(null, true);
+        },
     // In production: Only allow specific domains from config
     credentials: true, // Allow cookies and authentication headers
   })
