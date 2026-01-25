@@ -28,6 +28,9 @@ yarn-error.log*
 
 # Testing
 coverage/
+test-results/
+playwright-report/
+test-results.json
 
 # Temporary files
 *.tmp
