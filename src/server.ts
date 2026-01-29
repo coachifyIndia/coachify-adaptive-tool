@@ -41,6 +41,8 @@ import logger from './utils/logger.util';
 import authRoutes from './routes/auth.routes';
 import practiceRoutes from './routes/practice.routes';
 import analyticsRoutes from './routes/analytics.routes';
+import dashboardRoutes from './routes/dashboard.routes';
+import { adminRoutes } from './admin/routes';
 
 /**
  * CREATE EXPRESS APPLICATION
@@ -254,10 +256,10 @@ app.get('/', (_req: Request, res: Response) => {
       documentation: '/api/v1/docs', // Future: API documentation
       endpoints: {
         authentication: '/api/v1/auth',
-        questions: '/api/v1/questions', // Future
-        practice: '/api/v1/practice', // Future
-        videos: '/api/v1/videos', // Future
-        progress: '/api/v1/progress', // Future
+        practice: '/api/v1/practice',
+        analytics: '/api/v1/analytics',
+        dashboard: '/api/v1/dashboard',
+        admin: '/api/v1/admin',
       },
     },
   });
@@ -287,6 +289,8 @@ app.get('/', (_req: Request, res: Response) => {
 app.use('/api/v1/auth', authRoutes);
 app.use('/api/v1/practice', practiceRoutes);
 app.use('/api/v1/analytics', analyticsRoutes);
+app.use('/api/v1/dashboard', dashboardRoutes);
+app.use('/api/v1/admin', adminRoutes);
 
 // TODO: Add more routes as you build them
 // app.use('/api/v1/questions', questionRoutes);
@@ -382,6 +386,23 @@ async function startServer() {
     logger.info('Connecting to MongoDB...');
     await database.connect();
     logger.info('✅ Database connected successfully');
+
+    // ========================================================================
+    // STEP 1.5: INITIALIZE DEFAULT SUPER ADMIN (if not exists)
+    // ========================================================================
+    try {
+      const { adminAuthService } = await import('./admin/services/auth.service');
+      const defaultAdmin = await adminAuthService.initializeSuperAdmin(
+        'Super Admin',
+        'admin@coachify.com',
+        'Admin@123'
+      );
+      if (defaultAdmin) {
+        logger.info('✅ Default super admin created: admin@coachify.com / Admin@123');
+      }
+    } catch (error) {
+      logger.debug('Super admin initialization skipped (may already exist)');
+    }
 
     // ========================================================================
     // STEP 2: START HTTP SERVER
