@@ -1,5 +1,6 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
+import { AdminAuthProvider } from './context/AdminAuthContext';
 import Navbar from './components/layout/Navbar';
 import LoginPage from './pages/auth/LoginPage';
 import RegisterPage from './pages/auth/RegisterPage';
@@ -10,6 +11,18 @@ import PracticeModulesPage from './pages/practice/PracticeModulesPage';
 import AdaptiveDrillPage from './pages/practice/AdaptiveDrillPage';
 import AdaptiveDrillSummaryPage from './pages/practice/AdaptiveDrillSummaryPage';
 import QuestionExplorerPage from './pages/practice/QuestionExplorerPage';
+import {
+  AdminLoginPage,
+  AdminDashboardPage,
+  AdminQuestionsPage,
+  AdminQuestionFormPage,
+  AdminQuestionViewPage,
+  AdminImportPage,
+  AdminAuditPage,
+  AdminUsersPage,
+  AdminLayout,
+  AdminProtectedRoute,
+} from './pages/admin';
 
 // Protected Route Wrapper
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
@@ -105,7 +118,50 @@ function AppContent() {
   );
 }
 
+// Admin Routes Component
+function AdminRoutes() {
+  return (
+    <Router>
+      <Routes>
+        {/* Admin Login - No layout */}
+        <Route path="/admin/login" element={<AdminLoginPage />} />
+
+        {/* Admin Protected Routes with Layout */}
+        <Route
+          path="/admin"
+          element={
+            <AdminProtectedRoute>
+              <AdminLayout />
+            </AdminProtectedRoute>
+          }
+        >
+          <Route index element={<Navigate to="/admin/dashboard" replace />} />
+          <Route path="dashboard" element={<AdminDashboardPage />} />
+          <Route path="questions" element={<AdminQuestionsPage />} />
+          <Route path="questions/new" element={<AdminQuestionFormPage />} />
+          <Route path="questions/:id" element={<AdminQuestionViewPage />} />
+          <Route path="questions/:id/edit" element={<AdminQuestionFormPage />} />
+          <Route path="import" element={<AdminImportPage />} />
+          <Route path="audit" element={<AdminAuditPage />} />
+          <Route path="users" element={<AdminUsersPage />} />
+        </Route>
+      </Routes>
+    </Router>
+  );
+}
+
 function App() {
+  // Check if we're on an admin route
+  const isAdminRoute = window.location.pathname.startsWith('/admin');
+
+  if (isAdminRoute) {
+    return (
+      <AdminAuthProvider>
+        <AdminRoutes />
+      </AdminAuthProvider>
+    );
+  }
+
   return (
     <AuthProvider>
       <AppContent />
