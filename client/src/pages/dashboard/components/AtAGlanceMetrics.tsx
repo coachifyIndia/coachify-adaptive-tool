@@ -16,6 +16,7 @@ interface MetricsProps {
     consistency: {
       score: number;
       currentStreak: number;
+      bestStreak?: number;
     };
   };
 }
