@@ -159,7 +159,6 @@ const TimeAnalyticsSchema = new Schema<ITimeAnalytics>(
       required: true,
       default: 0,
       min: 0,
-      max: 20,
       index: true,
     },
 

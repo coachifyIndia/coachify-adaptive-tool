@@ -185,14 +185,12 @@ const VideoLectureSchema = new Schema<IVideoLecture>(
       type: Number,
       required: true,
       min: 0,
-      max: 20,
       index: true,
     },
     micro_skill_id: {
       type: Number,
       required: true,
       min: 1,
-      max: 74,
       index: true,
     },
     content: {

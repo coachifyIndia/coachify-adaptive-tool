@@ -19,7 +19,6 @@ const QuestionAttemptSchema = new Schema<IQuestionAttempt>(
       type: Number,
       required: true,
       min: 1,
-      max: 74,
     },
     difficulty: {
       type: Number,
@@ -166,7 +165,6 @@ const SessionSchema = new Schema<ISession>(
       required: true,
       default: 0,
       min: 0,
-      max: 20,
       index: true,
     },
     set_number: {
