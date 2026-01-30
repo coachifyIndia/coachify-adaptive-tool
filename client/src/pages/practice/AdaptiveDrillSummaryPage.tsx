@@ -53,7 +53,7 @@ export default function AdaptiveDrillSummaryPage() {
     try {
       const response = await practiceService.getSession(id);
       if (response.success && response.data.session) {
-        setSummary(response.data.session as DrillSummary);
+        setSummary(response.data.session as unknown as DrillSummary);
       }
     } catch (error) {
       console.error('Failed to fetch session details', error);
