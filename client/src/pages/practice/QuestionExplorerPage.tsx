@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { practiceService } from '../../services/practice.service';
 import type { Question } from '../../services/practice.service';
 import { Button } from '../../components/ui/Button';
-import { Search, Filter, Clock, BarChart2, BookOpen } from 'lucide-react';
+import { Search, Filter, Clock, BarChart2 } from 'lucide-react';
 import { cn } from '../../utils/cn';
 
 interface Module {

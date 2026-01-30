@@ -34,6 +34,7 @@ export interface Question {
   module_name?: string;
   micro_skill_id?: number;
   micro_skill_name?: string;
+  expected_time_seconds?: number;
 }
 
 export interface SubmitAnswerResponse {
