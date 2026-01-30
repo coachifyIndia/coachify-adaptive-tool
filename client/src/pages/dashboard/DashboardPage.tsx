@@ -7,9 +7,8 @@ import { useNavigate } from 'react-router-dom';
 import { AtAGlanceMetrics } from './components/AtAGlanceMetrics';
 import { LearningDiagnosis } from './components/LearningDiagnosis';
 import { ActionCenter } from './components/ActionCenter';
-import { Trophy, Calendar, AlertCircle } from 'lucide-react';
+import { AlertCircle, Loader2, BookOpen, Target, Flame, Trophy } from 'lucide-react';
 
-// Default empty state for dashboard data
 const EMPTY_DASHBOARD_DATA: DashboardData = {
   performance: {
     accuracy: { overall: 0, trend: '+0%', byDifficulty: { easy: 0, medium: 0, hard: 0 } },
@@ -51,13 +50,11 @@ export default function DashboardPage() {
     const fetchData = async () => {
       try {
         setError(null);
-        // Fetch real dashboard data from backend
         const dashboardData = await dashboardService.getDashboardSummary();
         setData(dashboardData);
       } catch (err: any) {
         console.error('Failed to fetch dashboard data:', err);
         setError(err.response?.data?.message || 'Failed to load dashboard data');
-        // Keep empty state on error
         setData(EMPTY_DASHBOARD_DATA);
       } finally {
         setLoading(false);
@@ -71,8 +68,8 @@ export default function DashboardPage() {
     setSessionStarting(true);
     try {
       const response = await practiceService.startSession({ session_size: 10 });
-      navigate(`/practice/session/${response.data.session.session_id}`, { 
-        state: { initialData: response.data } 
+      navigate(`/practice/session/${response.data.session.session_id}`, {
+        state: { initialData: response.data }
       });
     } catch (error: any) {
       console.error('Failed to start session', error);
@@ -89,10 +86,10 @@ export default function DashboardPage() {
 
   if (loading) {
     return (
-      <div className="flex h-screen items-center justify-center bg-gray-50">
+      <div className="min-h-screen bg-[#f8f9fa] flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto"></div>
-          <p className="mt-4 text-gray-500">Loading your dashboard...</p>
+          <Loader2 className="w-10 h-10 text-[#56339B] animate-spin mx-auto" />
+          <p className="mt-4 text-gray-600">Loading your dashboard...</p>
         </div>
       </div>
     );
@@ -100,14 +97,16 @@ export default function DashboardPage() {
 
   if (error) {
     return (
-      <div className="flex h-screen items-center justify-center bg-gray-50">
-        <div className="text-center max-w-md p-6 bg-white rounded-lg shadow-sm">
-          <AlertCircle className="mx-auto h-12 w-12 text-red-500 mb-4" />
-          <h2 className="text-lg font-semibold text-gray-900 mb-2">Failed to Load Dashboard</h2>
-          <p className="text-gray-500 mb-4">{error}</p>
+      <div className="min-h-screen bg-[#f8f9fa] flex items-center justify-center p-4">
+        <div className="bg-white rounded-xl shadow-sm p-8 max-w-md w-full text-center">
+          <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <AlertCircle className="w-8 h-8 text-red-500" />
+          </div>
+          <h2 className="text-xl font-semibold text-gray-900 mb-2">Failed to load dashboard</h2>
+          <p className="text-gray-500 mb-6">{error}</p>
           <button
             onClick={() => window.location.reload()}
-            className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"
+            className="px-6 py-2.5 bg-[#56339B] text-white font-medium rounded-lg hover:bg-[#4a2d85] transition-colors"
           >
             Try Again
           </button>
@@ -116,63 +115,96 @@ export default function DashboardPage() {
     );
   }
 
+  const greeting = getGreeting();
+  const firstName = user?.name?.split(' ')[0] || 'Student';
+
   return (
-    <div className="min-h-screen bg-gray-50 pb-20">
-      {/* Header Section */}
-      <div className="bg-white border-b border-gray-200">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
-           <div className="flex justify-between items-center">
-              <div>
-                <h1 className="text-2xl font-bold text-gray-900">Dashboard</h1>
-                <p className="text-gray-500 mt-1">
-                   Welcome back, <span className="font-semibold text-gray-900">{user?.name}</span>. 
-                   {data.motivation.transparencyMSG}
-                </p>
-              </div>
-              <div className="flex items-center gap-4">
-                 <div className="hidden md:flex items-center gap-2 bg-yellow-50 text-yellow-700 px-3 py-1.5 rounded-full text-sm font-medium border border-yellow-100">
-                    <Trophy size={16} />
-                    <span>Level {data.motivation.level}</span>
-                 </div>
-                 <div className="hidden md:flex items-center gap-2 bg-blue-50 text-blue-700 px-3 py-1.5 rounded-full text-sm font-medium border border-blue-100">
-                    <Calendar size={16} />
-                    <span>Day {data.performance.consistency.currentStreak} Streak</span>
-                 </div>
-                 <button
-                   onClick={() => navigate('/analytics-testing')}
-                   className="bg-purple-50 text-purple-700 px-3 py-1.5 rounded-full text-sm font-medium border border-purple-200 hover:bg-purple-100 transition-colors"
-                 >
-                   🧪 API Testing
-                 </button>
-              </div>
-           </div>
+    <div className="min-h-screen bg-[#f8f9fa]">
+      {/* Dashboard Header */}
+      <div className="bg-[#56339B]">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+            <div className="text-white">
+              <p className="text-[#c4b5fd] text-sm">{greeting}</p>
+              <h1 className="text-2xl font-semibold mt-1">Welcome back, {firstName}!</h1>
+              <p className="text-[#c4b5fd] text-sm mt-1">{data.motivation.transparencyMSG}</p>
+            </div>
+
+            {/* Quick Stats Row */}
+            <div className="flex items-center gap-3 flex-wrap">
+              <QuickStatBadge
+                icon={<Trophy size={18} />}
+                value={data.motivation.level}
+                label="Level"
+              />
+              <QuickStatBadge
+                icon={<Flame size={18} />}
+                value={data.performance.consistency.currentStreak}
+                label="Day Streak"
+              />
+              <QuickStatBadge
+                icon={<Target size={18} />}
+                value={`${data.motivation.xp}`}
+                label="XP Earned"
+              />
+              <QuickStatBadge
+                icon={<BookOpen size={18} />}
+                value="4/20"
+                label="Modules"
+              />
+            </div>
+          </div>
         </div>
       </div>
 
-      <main className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 mt-8">
-         {/* Layer 1: Core Metrics */}
-         <section>
-            <h2 className="sr-only">Performance Metrics</h2>
-            <AtAGlanceMetrics performance={data.performance} />
-         </section>
+      {/* Main Content */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        {/* Primary Action Card */}
+        <section className="mb-6">
+          <ActionCenter
+            adaptivity={data.adaptivity}
+            onStartSession={startSession}
+            loading={sessionStarting}
+          />
+        </section>
 
-         {/* Layer 3: Action Center (Placed closer to top for better UX) */}
-         <section>
-            <h2 className="sr-only">Recommended Actions</h2>
-            <ActionCenter 
-               adaptivity={data.adaptivity} 
-               onStartSession={startSession}
-               loading={sessionStarting} 
-            />
-         </section>
+        {/* Performance Stats */}
+        <section className="mb-6">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-lg font-semibold text-gray-900">Your Performance</h2>
+            <span className="text-sm text-[#56339B] font-medium cursor-pointer hover:underline">View Details</span>
+          </div>
+          <AtAGlanceMetrics performance={data.performance} />
+        </section>
 
-         {/* Layer 2: Diagnosis */}
-         <section>
-             <h2 className="text-lg font-bold text-gray-900 mb-4">Learning Diagnosis</h2>
-             <LearningDiagnosis diagnosis={data.diagnosis} />
-         </section>
-
-      </main>
+        {/* Learning Analytics */}
+        <section>
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-lg font-semibold text-gray-900">Learning Analytics</h2>
+            <span className="text-sm text-[#56339B] font-medium cursor-pointer hover:underline">View All</span>
+          </div>
+          <LearningDiagnosis diagnosis={data.diagnosis} />
+        </section>
+      </div>
     </div>
   );
+}
+
+function QuickStatBadge({ icon, value, label }: { icon: React.ReactNode; value: string | number; label: string }) {
+  return (
+    <div className="bg-white/10 backdrop-blur-sm rounded-lg px-4 py-2.5 flex items-center gap-3 min-w-[120px]">
+      <div className="text-white/80">{icon}</div>
+      <div>
+        <p className="text-white font-semibold text-lg leading-tight">{value}</p>
+        <p className="text-white/70 text-xs">{label}</p>
+      </div>
+    </div>
+  );
+}
+
+function getGreeting(): string {
+  const hour = new Date().getHours();
+  if (hour < 12) return 'Good morning';
+  if (hour < 17) return 'Good afternoon';
+  return 'Good evening';
 }
