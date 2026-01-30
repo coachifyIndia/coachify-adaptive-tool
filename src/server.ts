@@ -75,7 +75,18 @@ const app: Express = express();
 app.use(
   cors({
     origin: config.node.env === 'production'
-      ? config.cors.origin
+      ? (origin, callback) => {
+          // Parse CORS_ORIGIN as comma-separated list
+          const allowedOrigins = config.cors.origin.split(',').map(o => o.trim());
+          // Also allow Vercel preview deployments
+          const vercelPattern = /^https:\/\/.*\.vercel\.app$/;
+
+          if (!origin || allowedOrigins.includes(origin) || vercelPattern.test(origin)) {
+            callback(null, true);
+          } else {
+            callback(new Error('Not allowed by CORS'));
+          }
+        }
       : (_origin, callback) => {
           // In development: Allow all origins (including Playwright tests)
           callback(null, true);
