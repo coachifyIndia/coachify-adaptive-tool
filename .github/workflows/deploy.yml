@@ -1,0 +1,37 @@
+name: Deploy Coachify
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to Oracle VM
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.VM_HOST }}
+          username: ${{ secrets.VM_USER }}
+          key: ${{ secrets.VM_SSH_KEY }}
+          script: |
+            cd /home/coachify/coachify-adaptive-tool
+
+            # Pull latest code
+            git pull origin main
+
+            # Update backend
+            npm ci --production
+            npm run build
+
+            # Update frontend
+            cd client
+            npm ci
+            npm run build
+            cd ..
+
+            # Restart backend (zero downtime)
+            pm2 reload ecosystem.config.js
+
+            echo "Deployment complete!"
