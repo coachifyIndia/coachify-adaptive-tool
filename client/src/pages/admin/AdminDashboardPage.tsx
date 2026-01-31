@@ -197,8 +197,12 @@ export default function AdminDashboardPage() {
                 const percentage =
                   stats.total > 0 ? (count / stats.total) * 100 : 0;
                 return (
-                  <div key={moduleId} className="flex items-center gap-4">
-                    <div className="w-24 text-sm font-medium text-gray-600">
+                  <Link
+                    key={moduleId}
+                    to={`/admin/modules/${moduleId}/questions`}
+                    className="flex items-center gap-4 p-2 -mx-2 rounded-lg hover:bg-gray-50 transition-colors group"
+                  >
+                    <div className="w-24 text-sm font-medium text-gray-600 group-hover:text-indigo-600">
                       Module {moduleId}
                     </div>
                     <div className="flex-1">
@@ -209,10 +213,11 @@ export default function AdminDashboardPage() {
                         />
                       </div>
                     </div>
-                    <div className="w-16 text-right text-sm font-medium text-gray-700">
+                    <div className="w-16 text-right text-sm font-medium text-gray-700 flex items-center justify-end gap-1">
                       {count}
+                      <ArrowRight className="w-4 h-4 text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity" />
                     </div>
-                  </div>
+                  </Link>
                 );
               })}
           </div>
