@@ -483,6 +483,46 @@ export async function deleteQuestion(req: Request, res: Response): Promise<void>
 }
 
 /**
+ * Bulk Delete Questions by Module and Micro-skill
+ * DELETE /api/v1/admin/questions/bulk
+ */
+export async function bulkDeleteQuestions(req: Request, res: Response): Promise<void> {
+  try {
+    const { module_id, micro_skill_id, reason } = req.body;
+    const adminContext = getAdminContext(req);
+
+    if (module_id === undefined || micro_skill_id === undefined) {
+      res.status(400).json({
+        success: false,
+        message: 'module_id and micro_skill_id are required',
+        error: 'MISSING_PARAMETERS',
+      });
+      return;
+    }
+
+    const result = await questionService.bulkDeleteQuestionsByMicroSkill(
+      module_id,
+      micro_skill_id,
+      adminContext,
+      reason
+    );
+
+    res.status(200).json({
+      success: true,
+      message: `${result.deleted_count} questions archived successfully`,
+      data: result,
+    });
+  } catch (error: any) {
+    logger.error('Bulk delete questions error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'An error occurred',
+      error: 'INTERNAL_ERROR',
+    });
+  }
+}
+
+/**
  * Restore Question
  * POST /api/v1/admin/questions/:identifier/restore
  */
@@ -1167,6 +1207,7 @@ export default {
   updateQuestion,
   updateQuestionStatus,
   deleteQuestion,
+  bulkDeleteQuestions,
   restoreQuestion,
   listQuestions,
   getQuestionStats,

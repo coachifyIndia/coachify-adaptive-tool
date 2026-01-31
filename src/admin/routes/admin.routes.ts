@@ -210,6 +210,19 @@ router.patch(
 );
 
 /**
+ * @route   DELETE /api/v1/admin/questions/bulk
+ * @desc    Bulk delete (archive) questions by module and micro-skill
+ * @access  Content Admin, Super Admin
+ * @note    Must be before /:identifier to avoid conflict
+ */
+router.delete(
+  '/questions/bulk',
+  authenticateAdmin,
+  requireContentAdmin,
+  adminController.bulkDeleteQuestions
+);
+
+/**
  * @route   DELETE /api/v1/admin/questions/:identifier
  * @desc    Delete (archive) a question
  * @access  Content Admin, Super Admin

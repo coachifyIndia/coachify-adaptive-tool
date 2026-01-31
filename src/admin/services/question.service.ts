@@ -639,6 +639,64 @@ class QuestionService {
       logger.error('Error creating audit entry:', error);
     }
   }
+
+  /**
+   * Bulk delete questions by module and micro-skill
+   * This performs a hard delete for bulk operations
+   */
+  async bulkDeleteQuestionsByMicroSkill(
+    moduleId: number,
+    microSkillId: number,
+    adminContext: AdminContext,
+    reason?: string
+  ): Promise<{ deleted_count: number }> {
+    try {
+      // First, get all questions that match the criteria (excluding already archived)
+      const questions = await QuestionModel.find({
+        module_id: moduleId,
+        micro_skill_id: microSkillId,
+        status: { $ne: QuestionStatus.ARCHIVED },
+      });
+
+      if (questions.length === 0) {
+        return { deleted_count: 0 };
+      }
+
+      // Create audit entries for each question being deleted
+      const auditPromises = questions.map((question) =>
+        this.createAuditEntry(
+          question._id.toString(),
+          question.question_code,
+          AuditAction.DELETED,
+          adminContext,
+          [{ field: 'status', old_value: question.status, new_value: QuestionStatus.ARCHIVED }],
+          reason || `Bulk deleted from Module ${moduleId}, Micro-skill ${microSkillId}`
+        )
+      );
+
+      // Archive all matching questions (soft delete)
+      const result = await QuestionModel.updateMany(
+        {
+          module_id: moduleId,
+          micro_skill_id: microSkillId,
+          status: { $ne: QuestionStatus.ARCHIVED },
+        },
+        { $set: { status: QuestionStatus.ARCHIVED } }
+      );
+
+      // Wait for all audit entries to be created
+      await Promise.all(auditPromises);
+
+      logger.info(
+        `Bulk deleted ${result.modifiedCount} questions from Module ${moduleId}, Micro-skill ${microSkillId} by admin ${adminContext.admin_id}`
+      );
+
+      return { deleted_count: result.modifiedCount };
+    } catch (error: any) {
+      logger.error('Error bulk deleting questions:', error);
+      throw error;
+    }
+  }
 }
 
 // Export singleton instance
