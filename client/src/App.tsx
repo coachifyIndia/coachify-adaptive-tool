@@ -17,6 +17,7 @@ import {
   AdminQuestionsPage,
   AdminQuestionFormPage,
   AdminQuestionViewPage,
+  AdminModuleQuestionsPage,
   AdminImportPage,
   AdminAuditPage,
   AdminUsersPage,
@@ -141,6 +142,7 @@ function AdminRoutes() {
           <Route path="questions/new" element={<AdminQuestionFormPage />} />
           <Route path="questions/:id" element={<AdminQuestionViewPage />} />
           <Route path="questions/:id/edit" element={<AdminQuestionFormPage />} />
+          <Route path="modules/:moduleId/questions" element={<AdminModuleQuestionsPage />} />
           <Route path="import" element={<AdminImportPage />} />
           <Route path="audit" element={<AdminAuditPage />} />
           <Route path="users" element={<AdminUsersPage />} />
