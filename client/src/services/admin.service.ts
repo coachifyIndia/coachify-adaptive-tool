@@ -297,6 +297,17 @@ export const adminQuestionService = {
     return response.data;
   },
 
+  async bulkDeleteQuestionsByMicroSkill(moduleId: number, microSkillId: number, reason?: string) {
+    const response = await adminApi.delete<{
+      success: boolean;
+      message: string;
+      data: { deleted_count: number };
+    }>('/questions/bulk', {
+      data: { module_id: moduleId, micro_skill_id: microSkillId, reason },
+    });
+    return response.data;
+  },
+
   async updateQuestionStatus(questionId: string, status: QuestionStatus, reason?: string) {
     const response = await adminApi.patch<{ success: boolean; data: { question: Question } }>(
       `/questions/${questionId}/status`,
